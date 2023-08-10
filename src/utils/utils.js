@@ -1,3 +1,13 @@
+// 判断pc/移动端
+export function determinePcOrMove() {
+    if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+        //fontsize计算
+        document.documentElement.style.fontSize = document.documentElement.clientWidth / 320 * 16 + 'px'
+        return 1
+    } else {
+        return 2
+    }
+}
 // 随机打乱数组
 export function shuffle(arr) {
     let length = arr.length,
