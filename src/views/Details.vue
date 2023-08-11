@@ -199,10 +199,6 @@ export default {
         };
       }
     },
-    // iframe加载完成
-    aaa() {
-      console.log(11111);
-    },
     // 点击游侠icon
     iconClick(item) {
       recentGame(item)
