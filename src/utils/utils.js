@@ -21,10 +21,53 @@ export function shuffle(arr) {
     }
     return arr;
 }
+// 常玩游戏列表替换
+export function recentGame(element) {
+    // 用延时器是为了刷新常玩游戏时不展示当前点击的游戏
+    setTimeout(()=>{
+        let recentGame = JSON.parse(localStorage.getItem('recentGame')) || []
+        if (recentGame.length) {
+            let index = recentGame.findIndex((item) => item.filterStatus == 0)
+            if (recentGame.findIndex((item) => item.gameId == element.gameId) != -1) {
+                recentGame.map((item, index) => {
+                    if (item.gameId == element.gameId) {
+                        recentGame.splice(index, 1)
+                        item.filterStatus = 1
+                        recentGame.unshift(item)
+                    }
+                })
+                localStorage.setItem('recentGame', JSON.stringify(recentGame))
+                return
+            }
+            if (index == -1) {
+                recentGame.map((item) => {
+                    item.filterStatus = 0
+                })
+                recentGame[0] = {...element, filterStatus: 1}
+                localStorage.setItem('recentGame', JSON.stringify(recentGame))
+            } else {
+                let arr = []
+                recentGame.map((item) => {
+                    if (item.filterStatus == 0) {
+                        arr.push(item)
+                    }
+                })
+                recentGame.map((item, idx) => {
+                    if (item.gameId == arr[arr.length - 1].gameId) {
+                        recentGame.splice(idx, 1)
+                        recentGame.unshift({...element, filterStatus: 1})
+                    }
+                })
+                localStorage.setItem('recentGame', JSON.stringify(recentGame))
+            }
+        }
+    },1000)
+}
 // 全部数据
 export function getJson() {
     return (
-        [{
+        [
+            {
             "gameId": 4,
             "Name": "Monkey Mart",
             "Urlpc": "https://www.gugoplay.com/gcenter/urlpc/MonkeyMart/",

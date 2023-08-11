@@ -19,7 +19,7 @@
         <div class="onlyBoxShadow"></div>
         <div class="top-list" style="grid-area: in1">
           <div class="imgSpace clickEnlarge" v-for="(item,index) in topList" :key="index">
-            <a :href="'/#/details/'+item.Name.replace(/\s+/g, '')+'?gameId='+item.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')"><img v-lazy="item.iconUrl" alt=""></a>
+            <a :href="'/#/details/'+item.Name.replace(/\s+/g, '')+'?gameId='+item.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')" @click="iconClick(item)"><img v-lazy="item.iconUrl" alt=""></a>
           </div>
         </div>
       </div>
@@ -27,37 +27,20 @@
       <div class="cardLayout" v-for="(item,index) in structureList" :key="index" :style="index == structureList.length -1 ? {marginBottom: '25px'} : null">
         <div class="card" v-if="index == 0">
           <div class="big-img">
-            <div class="bright clickEnlarge"><a :href="'/#/details/'+index1[0].Name.replace(/\s+/g, '')+'?gameId='+index1[0].gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')"><img v-lazy="index1[0] && index1[0].iconUrl" alt=""></a></div>
+            <div class="bright clickEnlarge"><a :href="'/#/details/'+index1[0].Name.replace(/\s+/g, '')+'?gameId='+index1[0].gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')" @click="iconClick(index1[0])"><img v-lazy="index1[0] && index1[0].iconUrl" alt=""></a></div>
           </div>
         </div>
         <div class="card" v-if="item.length >= 1">
           <div class="nine_grid_area">
             <div class="grid-box">
-              <div v-for="(partItem,partIndex) in item.splice(0,9)" :key="partIndex" class="clickEnlarge" :class="partIndex == 0 ? 'bright' : null"><a :href="'/#/details/'+partItem.Name.replace(/\s+/g, '')+'?gameId='+partItem.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')"><img v-lazy="partItem.iconUrl" alt=""></a></div>
+              <div v-for="(partItem,partIndex) in item.splice(0,9)" :key="partIndex" class="clickEnlarge" :class="partIndex == 0 ? 'bright' : null"><a :href="'/#/details/'+partItem.Name.replace(/\s+/g, '')+'?gameId='+partItem.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')" @click="iconClick(partItem)"><img v-lazy="partItem.iconUrl" alt=""></a></div>
             </div>
           </div>
         </div>
         <div class="card" v-if="item.length >= 1">
           <div class="nine_grid_area">
             <div class="grid-box">
-              <div v-for="(partItem,partIndex) in item.splice(0,9)" :key="partIndex" class="clickEnlarge" :class="partIndex == 0 ? 'trembling' : null"><a :href="'/#/details/'+partItem.Name.replace(/\s+/g, '')+'?gameId='+partItem.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')"><img v-lazy="partItem.iconUrl" alt=""></a></div>
-            </div>
-          </div>
-        </div>
-        <div class="card" v-if="index == 0">
-          <div class="ads_area" style="width: 100%;height: 100%;overflow: hidden"></div>
-        </div>
-        <div class="card" v-if="item.length >= 1">
-          <div class="nine_grid_area">
-            <div class="grid-box">
-              <div v-for="(partItem,partIndex) in item.splice(0,6)" :key="partIndex" class="clickEnlarge" :class="partIndex == 0 ? 'leftTop' : null"><a :href="'/#/details/'+partItem.Name.replace(/\s+/g, '')+'?gameId='+partItem.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')"><img v-lazy="partItem.iconUrl" alt=""></a></div>
-            </div>
-          </div>
-        </div>
-        <div class="card" v-if="item.length >= 1">
-          <div class="nine_grid_area">
-            <div class="grid-box">
-              <div v-for="(partItem,partIndex) in item.splice(0,6)" :key="partIndex" class="clickEnlarge" :class="partIndex == 0 ? 'rightTop trembling' : null"><a :href="'/#/details/'+partItem.Name.replace(/\s+/g, '')+'?gameId='+partItem.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')"><img v-lazy="partItem.iconUrl" alt=""></a></div>
+              <div v-for="(partItem,partIndex) in item.splice(0,9)" :key="partIndex" class="clickEnlarge" :class="partIndex == 0 ? 'trembling' : null"><a :href="'/#/details/'+partItem.Name.replace(/\s+/g, '')+'?gameId='+partItem.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')" @click="iconClick(partItem)"><img v-lazy="partItem.iconUrl" alt=""></a></div>
             </div>
           </div>
         </div>
@@ -67,14 +50,31 @@
         <div class="card" v-if="item.length >= 1">
           <div class="nine_grid_area">
             <div class="grid-box">
-              <div v-for="(partItem,partIndex) in item.splice(0,6)" :key="partIndex" class="clickEnlarge" :class="partIndex == 0 ? 'leftBottom' : null"><a :href="'/#/details/'+partItem.Name.replace(/\s+/g, '')+'?gameId='+partItem.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')"><img v-lazy="partItem.iconUrl" alt=""></a></div>
+              <div v-for="(partItem,partIndex) in item.splice(0,6)" :key="partIndex" class="clickEnlarge" :class="partIndex == 0 ? 'leftTop' : null"><a :href="'/#/details/'+partItem.Name.replace(/\s+/g, '')+'?gameId='+partItem.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')" @click="iconClick(partItem)"><img v-lazy="partItem.iconUrl" alt=""></a></div>
             </div>
           </div>
         </div>
         <div class="card" v-if="item.length >= 1">
           <div class="nine_grid_area">
             <div class="grid-box">
-              <div v-for="(partItem,partIndex) in item.splice(0,9)" :key="partIndex" class="clickEnlarge" :class="partIndex == 0 ? 'bright' : null"><a :href="'/#/details/'+partItem.Name.replace(/\s+/g, '')+'?gameId='+partItem.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')"><img v-lazy="partItem.iconUrl" alt=""></a></div>
+              <div v-for="(partItem,partIndex) in item.splice(0,6)" :key="partIndex" class="clickEnlarge" :class="partIndex == 0 ? 'rightTop trembling' : null"><a :href="'/#/details/'+partItem.Name.replace(/\s+/g, '')+'?gameId='+partItem.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')" @click="iconClick(partItem)"><img v-lazy="partItem.iconUrl" alt=""></a></div>
+            </div>
+          </div>
+        </div>
+        <div class="card" v-if="index == 0">
+          <div class="ads_area" style="width: 100%;height: 100%;overflow: hidden"></div>
+        </div>
+        <div class="card" v-if="item.length >= 1">
+          <div class="nine_grid_area">
+            <div class="grid-box">
+              <div v-for="(partItem,partIndex) in item.splice(0,6)" :key="partIndex" class="clickEnlarge" :class="partIndex == 0 ? 'leftBottom' : null"><a :href="'/#/details/'+partItem.Name.replace(/\s+/g, '')+'?gameId='+partItem.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')" @click="iconClick(partItem)"><img v-lazy="partItem.iconUrl" alt=""></a></div>
+            </div>
+          </div>
+        </div>
+        <div class="card" v-if="item.length >= 1">
+          <div class="nine_grid_area">
+            <div class="grid-box">
+              <div v-for="(partItem,partIndex) in item.splice(0,9)" :key="partIndex" class="clickEnlarge" :class="partIndex == 0 ? 'bright' : null"><a :href="'/#/details/'+partItem.Name.replace(/\s+/g, '')+'?gameId='+partItem.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')" @click="iconClick(partItem)"><img v-lazy="partItem.iconUrl" alt=""></a></div>
             </div>
           </div>
         </div>
@@ -88,7 +88,7 @@
             <div class="three_game_area_context">
               <div v-for="(bottomItem,bottomIndex) in bottomList" :key="bottomIndex">
                 <div class="three_game_area_context_detail">
-                  <a :href="'/#/details/'+bottomItem.Name.replace(/\s+/g, '')+'?gameId='+bottomItem.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')" style="display: flex" class="clickEnlarge">
+                  <a :href="'/#/details/'+bottomItem.Name.replace(/\s+/g, '')+'?gameId='+bottomItem.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')" @click="iconClick(bottomItem)" style="display: flex" class="clickEnlarge">
                     <div><img v-lazy="bottomItem.iconUrl" alt=""></div>
                     <div class="context_title">
                       <div>
@@ -108,14 +108,14 @@
         <div class="card" v-if="item.length >= 1">
           <div class="nine_grid_area">
             <div class="grid-box">
-              <div v-for="(partItem,partIndex) in item.splice(0,6)" :key="partIndex" class="clickEnlarge" :class="partIndex == 0 ? 'leftTop' : null"><a :href="'/#/details/'+partItem.Name.replace(/\s+/g, '')+'?gameId='+partItem.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')"><img v-lazy="partItem.iconUrl" alt=""></a></div>
+              <div v-for="(partItem,partIndex) in item.splice(0,6)" :key="partIndex" class="clickEnlarge" :class="partIndex == 0 ? 'leftTop' : null"><a :href="'/#/details/'+partItem.Name.replace(/\s+/g, '')+'?gameId='+partItem.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')" @click="iconClick(partItem)"><img v-lazy="partItem.iconUrl" alt=""></a></div>
             </div>
           </div>
         </div>
         <div class="card" v-if="item.length >= 1">
           <div class="nine_grid_area">
             <div class="grid-box">
-              <div v-for="(partItem,partIndex) in item.splice(0,6)" :key="partIndex" class="clickEnlarge" :class="partIndex == 0 ? 'rightBottom' : null"><a :href="'/#/details/'+partItem.Name.replace(/\s+/g, '')+'?gameId='+partItem.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')"><img v-lazy="partItem.iconUrl" alt=""></a></div>
+              <div v-for="(partItem,partIndex) in item.splice(0,6)" :key="partIndex" class="clickEnlarge" :class="partIndex == 0 ? 'rightBottom' : null"><a :href="'/#/details/'+partItem.Name.replace(/\s+/g, '')+'?gameId='+partItem.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')" @click="iconClick(partItem)"><img v-lazy="partItem.iconUrl" alt=""></a></div>
             </div>
           </div>
         </div>
@@ -146,24 +146,18 @@
         </div>
       </div>
     </div>
-    <div class="foot">
-      <div class="footStyle">
-        <div class="foot-tab">
-          <a @click="privacyClick">Privacy</a>
-          <a @click="contactClick">Contact us</a>
-        </div>
-      </div>
-    </div>
+    <Foot></Foot>
   </div>
 </template>
 
 <script>
-import { getJson, shuffle } from '@/utils/utils'
+import {getJson, recentGame, shuffle} from '@/utils/utils'
+import Foot from "@/components/Foot.vue";
 import home from '@/assets/home.png'
 export default {
   name: 'HomeView',
   components: {
-
+    Foot
   },
   data() {
     return {
@@ -196,25 +190,9 @@ export default {
       }
       console.log(this.structureList);
     },
-    privacyClick() {
-      let { channel } = this.$route.query
-      let pathInfo = this.$router.resolve({
-        path: '/privacy',
-        query: {
-          channel
-        }
-      })
-      window.open(pathInfo.href, '_blank')
-    },
-    contactClick() {
-      let { channel } = this.$route.query
-      let pathInfo = this.$router.resolve({
-        path: '/contactUs',
-        query: {
-          channel
-        }
-      })
-      window.open(pathInfo.href, '_blank')
+    // 点击游戏icon
+    iconClick(item) {
+      recentGame(item)
     }
   }
 }
@@ -813,44 +791,6 @@ a{
           }
         }
       }
-    }
-  }
-  .foot{
-    width: 100%;
-    font-size: 18px;
-    .footStyle {
-      padding-top: 70px;
-      --foot-box-shadow: 0 15px 64px 16px rgba(0, 0, 0, .15);
-      position: relative;
-      margin-top: 22px;
-      padding-bottom: 80px;
-      width: 100%;
-      box-shadow: var(--foot-box-shadow);
-      text-align: center;
-      font-family: Helvetica;
-      font-weight: 400;
-      color: #747474 !important;
-      flex-flow: row nowrap;
-      a{
-        cursor: pointer;
-      }
-      a:not(:last-child) {
-        margin-right: 1rem;
-      }
-    }
-    .footStyle::before {
-      position: absolute;
-      top: 23px;
-      left: 50%;
-      transform: translateX(-50%);
-      //background-image: url();
-      background-size: contain;
-      background-position: center;
-      background-repeat: no-repeat;
-      height: 32px;
-      width: 160px;
-      display: block;
-      content: "";
     }
   }
 }
