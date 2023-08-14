@@ -90,17 +90,74 @@
           </div>
         </div>
       </div>
-      <div class="iframeBox" v-show="iframeType">
-        <iframe :src="gameInfo.Url ? gameInfo.Url : null" width="100%" height="100%" id="iframe" ref="Iframe"></iframe>
+      <div class="app-module" v-show="iframeType">
+        <div class="app-iframe">
+          <div class="sc-1nfyi8d-1 kExbnh">
+            <div class="iframe-box">
+              <iframe id="gameIframe" :src="gameInfo.Url ? gameInfo.Url : null" width="100%" height="100%"></iframe>
+            </div>
+            <div class="app-promote">
+
+            </div>
+          </div>
+        </div>
+        <el-button class="iframe-back" id="iframe-back" :style="mobileNavDrag" @touchmove.native.prevent="backToucheMove" @touchend.native.prevent="backToucheEnd"><img :src="goBack" alt=""></el-button>
+        <div class="unfoldContent" id="unfoldContent" style="bottom: calc(-550px); max-height: 470px;">
+          <div class="gameMenu" style="width: 100vw;">
+            <div>
+              <div class="headBtns">
+                <div class="btns">
+                  <div class="home enlarge"></div>
+                  <div class="refresh enlarge"></div>
+                  <div class="fullscreen enlarge" style="display: flex;"></div>
+                  <div class="copy enlarge"></div>
+                </div>
+                <div class="btns">
+                  <div class="close enlarge"></div>
+                </div>
+              </div>
+              <div class="games">
+                <div class="navigationStyle">
+                  <div class="onlyBoxShadowBefore"></div>
+                  <div class="onlyBoxShadow"></div>
+                  <div class="gameShow">
+                    <div>
+                      <a class="imgSpace clickEnlarge">
+                        <div style="position: relative;">
+                          <img src="" alt="">
+                          <div class="historyIcon">
+                            <img src="" alt="" width="30px" height="30px">
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="endBtns">
+                <div class="bubbleDiv like enlarge" @click="bubbleClick">
+                  <div class="bubbleText">10k+</div>
+                  <img :src="blueLike" alt="" :class="bubbleType ? 'bubbleUp' : 'bubble'">
+                  <img :src="blueLike" alt="" :class="bubbleType ? 'bubbleUp2' : 'bubble'">
+                  <img :src="blueLike" alt="" :class="bubbleType ? 'bubbleUp3' : 'bubble'">
+                  <img :src="blueLike" alt="" :class="bubbleType ? 'bubbleUp4' : 'bubble'">
+                  <img :src="blueLike" alt="" :class="bubbleType ? 'bubbleUp5' : 'bubble'">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import {getJson, shuffle, recentGame} from '@/utils/utils'
+import {getJson, shuffle, recentGame} from '@/utils/utils';
 import Foot from "@/components/Foot.vue";
-import history from '@/assets/history.png'
+import history from '@/assets/history.png';
+import goBack from '@/assets/goBack.png';
+import blueLike from '@/assets/blue-like.png';
 export default {
   name: "Details",
   components: {
@@ -109,6 +166,8 @@ export default {
   data() {
     return {
       history,
+      goBack,
+      blueLike,
       gameInfo: {}, // 游戏详情
       gameScore: 0,
       likeScore: 2000,
@@ -119,6 +178,15 @@ export default {
       loadingcircleright: 0, // 头像加载条
       loadingText: 0, // loading值
       iframeType: false, // iframe状态
+      mobileNavDrag: {
+        '--mobileNavDragY': '24px',
+        '--mobileNavDragX': `${window.innerWidth - 70}px`
+      },
+      mobileNavDragY: '24px',
+      mobileNavDragX: `${window.innerWidth - 70}px`,
+      clickOrTouchType: false,
+      portraitOrLandscape: false,
+      bubbleType: false
     }
   },
   mounted() {
@@ -126,6 +194,42 @@ export default {
     const { gameId } = query || {}
     const { gameName } = params || {}
     this.getAllJson()
+
+    let that = this
+    let match = window.matchMedia("(orientation:portrait)");
+    if (match.matches) {
+      console.log('竖屏');
+      that.portraitOrLandscape = true
+      that.mobileNavDrag = {
+        '--mobileNavDragY': '24px',
+        '--mobileNavDragX': `${window.innerWidth - 70}px`
+      }
+    }else {
+      console.log('横屏');
+      that.portraitOrLandscape = false
+      that.mobileNavDrag = {
+        '--mobileNavDragY': '24px',
+        '--mobileNavDragX': `${window.innerWidth - 70 - 76}px`
+      }
+    }
+    match.addListener((mql) => {
+      console.log(mql);
+      if (match.matches) {
+        console.log('竖屏');
+        that.portraitOrLandscape = true
+        that.mobileNavDrag = {
+          '--mobileNavDragY': '24px',
+          '--mobileNavDragX': `${window.innerWidth - 70}px`
+        }
+      }else {
+        console.log('横屏');
+        that.portraitOrLandscape = false
+        that.mobileNavDrag = {
+          '--mobileNavDragY': '24px',
+          '--mobileNavDragX': `${window.innerWidth - 70 - 76}px`
+        }
+      }
+    });
   },
   methods: {
     // 获取全部数据
@@ -169,39 +273,90 @@ export default {
           if (this.loadingcircleright == 180) {
             clearInterval(this.loadingcirclerightTime)
             this.loadingcircleright = 0
-            document.getElementById('loadingcircleright').style.borderColor = 'rgb(53, 139, 238)'
+            document.getElementById('loadingcircleright') && (document.getElementById('loadingcircleright').style.borderColor = 'rgb(53, 139, 238)')
             this.loadingcircleleftTime = setInterval(()=>{
               this.loadingcircleleft++
-              if (this.loadingcircleleft == 172) {
+              if (this.loadingcircleleft == 178) {
                 clearInterval(this.loadingcircleleftTime)
-                this.loadingcircleleft = 172
+                this.loadingcircleleft = 178
+
+                this.headerLoading = false
+                this.loadingcircleleft = 0
+                this.loadingcircleright = 0
+                this.loadingText = 0
+                this.iframeType = true
               }
-            },20)
+            },5)
           }
-        },20)
+        },5)
         this.loadingTextTime = setInterval(()=>{
           this.loadingText++
           if (this.loadingText == 98) {
             this.loadingText = 98
             clearInterval(this.loadingTextTime)
           }
-        },72)
+        },18)
 
-        // iframe加载进度
-        const iframe = this.$refs.Iframe;
-        // 兼容处理
-        iframe.onload = () => {
-          this.headerLoading = false
-          this.loadingcircleleft = 0
-          this.loadingcircleright = 0
-          this.loadingText = 0
-          this.iframeType = true
-        };
+        // // iframe加载进度
+        // const iframe = this.$refs.Iframe;
+        // // 兼容处理
+        // iframe.onload = () => {
+        //   this.headerLoading = false
+        //   this.loadingcircleleft = 0
+        //   this.loadingcircleright = 0
+        //   this.loadingText = 0
+        //   this.iframeType = true
+        // };
       }
     },
     // 点击游侠icon
     iconClick(item) {
       recentGame(item)
+    },
+    // 鼠标拖动返回按钮
+    backToucheMove(e) {
+      this.clickOrTouchType = true
+      this.mobileNavDrag = {
+        '--mobileNavDragY': `${e.targetTouches[0].clientY - 17 > 24 ? e.targetTouches[0].clientY - 17 > window.innerHeight - 45 ? window.innerHeight - 45 : e.targetTouches[0].clientY - 17 : 24}px`,
+        '--mobileNavDragX': this.portraitOrLandscape ? `${e.targetTouches[0].clientX - 35}px` : `${e.targetTouches[0].clientX - 35 - 76}px`,
+        opacity: 0.6
+      }
+      this.mobileNavDragY = `${e.targetTouches[0].clientY - 17 > 24 ? e.targetTouches[0].clientY - 17 > window.innerHeight - 45 ? window.innerHeight - 45 : e.targetTouches[0].clientY - 17 : 24}px`
+      this.mobileNavDragX = this.portraitOrLandscape ? `${e.targetTouches[0].clientX - 35 > window.innerWidth / 2 ? window.innerWidth - 70 : 0}px` : `${e.targetTouches[0].clientX - 35 > window.innerWidth / 2 ? window.innerWidth - 70 - 76 : 0}px`
+    },
+    // 鼠标离开返回按钮
+    backToucheEnd() {
+      if (this.clickOrTouchType) {
+        this.mobileNavDrag = {
+          '--mobileNavDragY': this.mobileNavDragY,
+          '--mobileNavDragX': this.mobileNavDragX,
+          opacity: 1,
+        }
+        this.clickOrTouchType = false
+      } else {
+        this.backClick()
+      }
+    },
+    // 点击返回
+    backClick() {
+      this.clickOrTouchType = false
+      document.getElementById('unfoldContent').style.bottom = '80px'
+      console.log(this.mobileNavDragX);
+      console.log(window.innerWidth - 70);
+      this.mobileNavDrag = {
+        '--mobileNavDragY': this.mobileNavDragY,
+        '--mobileNavDragX': this.mobileNavDragX,
+        transition: 'left 0.5s ease 0s',
+        opacity: 1,
+        left: this.mobileNavDragX == `${window.innerWidth - 70}px` ? '70px' : '-70px'
+      }
+    },
+    // 点击喜欢
+    bubbleClick() {
+      this.bubbleType = true
+      setTimeout(()=>{
+        this.bubbleType = false
+      },1000)
     }
   },
   watch: {
@@ -264,6 +419,97 @@ export default {
 .clickEnlarge:active {
   -webkit-tap-highlight-color: transparent;
   animation: clickEnlarge 0.2s linear;
+}
+
+@keyframes enlarge {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(2);
+  }
+}
+.enlarge:active{
+  animation: enlarge 0.2s linear;
+}
+
+@keyframes bubbleUp {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: translate(10px, -80px) scale(2);
+  }
+}
+@keyframes bubbleUp2 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: translate(-40px, -60px) scale(4);
+  }
+}
+@keyframes bubbleUp3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: translate(10px, 30px) scale(2);
+  }
+}
+@keyframes bubbleUp4 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: translate(-100px, 80px) scale(5);
+  }
+}
+@keyframes bubbleUp5 {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1);
+  }
+  100% {
+    transform: translate(-20px, -50px) scale(2);
+  }
+}
+.bubbleUp{
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  z-index: 10;
+  animation: bubbleUp 1s linear;
+}
+.bubbleUp2{
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  z-index: 10;
+  animation: bubbleUp2 1s ease;
+}
+.bubbleUp3{
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  z-index: 10;
+  animation: bubbleUp3 1s ease-in-out;
+}
+.bubbleUp4{
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  z-index: 10;
+  animation: bubbleUp4 1s ease-out;
+}
+.bubbleUp5{
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  z-index: 10;
+  animation: bubbleUp5 1.5s linear;
 }
 .details{
   max-width: 100vw;
@@ -738,14 +984,312 @@ export default {
       max-width: 375px;
     }
   }
-  .iframeBox{
-    position: fixed;
+  @supports (height:100dvh) {
+    .app-module {
+      --minHeight: 100dvh;
+      --height: 100dvh;
+    }
+  }
+  .app-module {
+    position: absolute;
     left: 0;
-    right: 0;
     top: 0;
-    bottom: 0;
+    height: var(--height,100%);
+    width: var(--width,100%);
+    --width: 100vw;
+    min-height: var(--minHeight,100vh);
     z-index: 201;
-    background: #ffffff;
+    background-color: #127DAB;
+    overflow: hidden;
+    .app-iframe{
+      display: flex;
+      justify-content: center;
+      margin: 0px auto;
+      position: relative;
+      z-index: 1;
+      width: 100% !important;
+      height: 100% !important;
+      .kExbnh {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        flex-grow: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--denim-blue);
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 6px 12px 0px;
+        .iframe-box{
+          width: 100%;
+          height: 100%;
+          padding: 0 2px 2px 0;
+          box-sizing: border-box;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-grow: 1;
+          position: relative;
+          #gameIframe{
+            border: 1px solid #cccccc;
+          }
+        }
+      }
+    }
+    .unfoldContent{
+      position: fixed;
+      z-index: 1001;
+      width: 100vw;
+      transition: bottom 1s ease;
+      .gameMenu {
+        overflow: hidden;
+        margin: 0 auto;
+        height: 100%;
+      }
+      .gameMenu>div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+        box-sizing: border-box;
+        margin: auto;
+        padding: 10px 10px 0 10px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        width: 320px;
+        height: 100%;
+        background: #ffffff;
+        .headBtns, .endBtns {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          height: 60px;
+          .btns {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            .home {
+              background-image: url('~@/assets/home.png');
+              background-size: 25px 21px;
+            }
+            .refresh {
+              background-image: url('~@/assets/refresh.png');
+              background-size: 20px 20px;
+            }
+            .fullscreen {
+              background-image: url('~@/assets/fullscreen.png');
+              background-size: 20px 20px;
+            }
+            .copy {
+              background-image: url('~@/assets/copy.png');
+              background-size: 20px 20px;
+            }
+            .close {
+              background-image: url('~@/assets/close.png');
+              background-size: 20px 20px;
+            }
+            .home,.refresh,.fullscreen,.copy,.close{
+              background-repeat: no-repeat;
+              background-position: center;
+              //background-size: contain;
+              cursor: pointer;
+            }
+          }
+          .btns>div{
+            margin-right: 10px;
+            --stretchBtnBoxShadow: 0 0 10px 0 rgb(0 0 0 / 16%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            box-shadow: var(--stretchBtnBoxShadow);
+          }
+        }
+        .games {
+          border-radius: 10px;
+          width: 100%;
+          height: 90px;
+          box-shadow: rgb(0 0 0 / 16%) 0 0 10px 0;
+          .navigationStyle {
+            display: flex;
+            overflow: hidden;
+            position: relative;
+            justify-content: center;
+            align-items: center;
+            padding: 0 1px;
+            width: 100%;
+            height: 100%;
+            .onlyBoxShadowBefore {
+              position: absolute;
+              left: -1px;
+              top: 0;
+              z-index: 2;
+              border-radius: 10px;
+              width: 15px;
+              height: 100%;
+              background: linear-gradient(to left, rgba(255, 255, 255, 0) 0, rgb(255, 255, 255) 100%);
+            }
+            .onlyBoxShadow {
+              position: absolute;
+              right: -2px;
+              top: 0;
+              z-index: 2;
+              border-radius: 10px;
+              width: 15px;
+              height: 100%;
+              background: linear-gradient(to right, rgba(255, 255, 255, 0) 0, rgb(255, 255, 255) 100%);
+            }
+            .gameShow {
+              display: flex;
+              overflow-x: scroll;
+              align-items: center;
+              width: inherit;
+              height: 90px;
+              .imgSpace {
+                margin: 5px;
+                width: 60px;
+                height: 60px;
+                img{
+                  width: 100%;
+                  height: 100%;
+                  border-radius: 5px;
+                  box-shadow: rgba(0, 0, 0, 0.16) 0px 9px 5px 0px;
+                }
+                .historyIcon {
+                  position: absolute;
+                  right: -6px;
+                  top: -2px;
+                }
+              }
+            }
+          }
+        }
+        .endBtns>div {
+          --stretchBtnBoxShadow: 0 0 10px 0 rgb(0 0 0 / 16%);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 10px;
+          width: 40px;
+          height: 40px;
+          box-shadow: var(--stretchBtnBoxShadow);
+        }
+        .endBtns>div:last-child {
+          margin-right: 0;
+        }
+        .bubbleDiv {
+          position: relative;
+          background-image: url('~@/assets/blue-like.png');
+          background-position: 10px 5px;
+          background-size: 18px 18px;
+          background-repeat: no-repeat;
+          cursor: pointer;
+          .bubbleText {
+            position: absolute;
+            top: 22px;
+            font-family: Microsoft YaHei;
+            font-weight: bold;
+            font-size: 12px;
+            color: #378ef5;
+          }
+          .bubble {
+            position: absolute;
+            z-index: -1;
+          }
+        }
+      }
+    }
+  }
+  @media screen and (orientation: portrait){
+    .app-iframe {
+      max-width: 100%;
+      max-height: 100%;
+      margin: 0 auto;
+      position: relative;
+    }
+    .iframe-back{
+      z-index: 1;
+      position: fixed;
+      top: 0;
+      overflow: hidden;
+      width: 70px;
+      height: 45px;
+      text-align: center;
+      transform: translate(var(--mobileNavDragX,24px),var(--mobileNavDragY,24px));
+      border: none;
+      background: rgba(0,0,0,0);
+      padding: 0;
+      left: 0;
+      img{
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .app-promote {
+      height: 76px;
+      overflow: hidden;
+      background-color: #127DAB;
+      padding: 10px 0;
+      flex-grow: 0;
+      flex-shrink: 0;
+      display: flex;
+      justify-content: space-between;
+      align-self: stretch;
+      position: relative;
+      z-index: 3;
+      box-sizing: border-box;
+    }
+  }
+  @media screen and (orientation: landscape){
+    .app-module{
+      display: flex!important;
+      flex-direction: row-reverse;
+    }
+    .kExbnh {
+      flex-direction: row-reverse!important;
+    }
+    .app-iframe {
+      width: 100%;
+      height: 100%!important;
+      max-width: 100%;
+      max-height: 100%;
+      margin: 0 auto;
+      position: relative;
+    }
+    .iframe-back{
+      z-index: 1;
+      text-align: center;
+      position: fixed;
+      top: 0;
+      left: 76px;
+      overflow: hidden;
+      width: 70px;
+      height: 45px;
+      transform: translate(var(--mobileNavDragX,24px),var(--mobileNavDragY,24px));
+      border: none;
+      background: rgba(0,0,0,0);
+      padding: 0;
+      img{
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .app-promote {
+      height: 100%;
+      width: 76px;
+      overflow: hidden;
+      background-color: #127DAB;
+      flex-grow: 0;
+      flex-shrink: 0;
+      display: flex;
+      justify-content: space-between;
+      align-self: stretch;
+      position: relative;
+      z-index: 3;
+      box-sizing: border-box;
+    }
   }
 }
 </style>
