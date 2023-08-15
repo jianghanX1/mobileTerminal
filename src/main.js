@@ -6,7 +6,7 @@ import store from './store'
 import axios from 'axios'
 import VueLazyload from 'vue-lazyload'
 import { Button, Select, Input, Message, Form, FormItem, Rate } from 'element-ui'
-import { getJson } from '@/utils/utils'
+import { getJson, getUrlParams } from '@/utils/utils'
 Vue.use(Button)
 Vue.use(Select)
 Vue.use(Form)
@@ -32,6 +32,19 @@ if (!localStorage.getItem('recentGame')) {
   })
   localStorage.setItem('recentGame',JSON.stringify(recentGame))
 }
+
+// 解决地址栏参数在/#前面问题
+let b = new URL(window.location.href);
+if (b.hash === '#/') {
+  if (b.search) {
+    history.replaceState(null,null,`${b.origin + b.pathname}#/home${b.search}`)
+  } else if (getUrlParams('channel')){
+    history.replaceState(null,null,`${b.origin + b.pathname}#/home?channel=${getUrlParams('channel')}`)
+  } else {
+    history.replaceState(null,null,`${b.origin + b.pathname}#/home`)
+  }
+}
+
 new Vue({
   router,
   store,

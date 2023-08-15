@@ -60,6 +60,17 @@ export function recentGame(element) {
         }
     }
 }
+
+
+// 获取指定地址栏参数
+export function getUrlParams(key) {
+    let reg = new RegExp("(^|&)" + key + "=([^&]*)(&|$)");
+    let r = window.location.hash.split('?')[1] && window.location.hash.split('?')[1].match(reg);
+    if (r != null)
+        return decodeURIComponent(r[2]);
+    return null;
+}
+
 // 全部数据
 export function getJson() {
     return (

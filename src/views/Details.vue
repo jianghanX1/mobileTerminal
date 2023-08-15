@@ -122,7 +122,7 @@
                   <div class="onlyBoxShadowBefore"></div>
                   <div class="onlyBoxShadow"></div>
                   <div class="gameShow">
-                    <a :href="'/#/details/'+item.Name.replace(/\s+/g, '')+'?gameId='+item.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')" v-for="(item,index) in recommendGameList" :key="index">
+                    <a :href="'/#/details/'+item.Name.replace(/\s+/g, '')+'?gameId='+item.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')" v-for="(item,index) in recommendGameList" :key="index" @click="iconClick(item)">
                       <div class="imgSpace clickEnlarge">
                         <div style="position: relative;">
                           <img v-lazy="item.iconUrl" alt="">
@@ -318,6 +318,10 @@ export default {
     // 点击游侠icon
     iconClick(item) {
       recentGame(item)
+      // 推荐游戏点击如果是最大化需要
+      if (this.fullscreenType) {
+        this.smallScreenClick()
+      }
     },
     // 鼠标拖动返回按钮
     backToucheMove(e) {
