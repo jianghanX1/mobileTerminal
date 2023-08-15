@@ -25,7 +25,7 @@ let arr = getJson() || [] // 原数组
 let recentGame = []
 if (!localStorage.getItem('recentGame')) {
   arr.map((item)=>{
-    if (recentGame.length < 10) {
+    if (recentGame.length < 11) {
       item.filterStatus = 0 // 筛选状态用来判断点击游戏时替换数组中的位置元素
       recentGame.push(item)
     }

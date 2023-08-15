@@ -70,7 +70,7 @@
               <h2>Recently Played</h2>
               <div></div>
               <div class="crossPromotionList">
-                <a :href="'/#/details/'+item.Name.replace(/\s+/g, '')+'?gameId='+item.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')" v-for="(item,index) in recentGameList" :key="index" @click="iconClick(item)">
+                <a :href="'/#/details/'+item.Name.replace(/\s+/g, '')+'?gameId='+item.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')" v-for="(item,index) in recentGameList" :key="index" @click="iconClick(item)" v-show="item.gameId != gameInfo.gameId">
                   <img v-lazy="item.iconUrl" alt="" class="clickEnlarge">
                   <div class="historyIcon">
                     <img :src="history" alt="">
@@ -90,7 +90,7 @@
           </div>
         </div>
       </div>
-      <div class="app-module" v-show="iframeType">
+      <div class="app-module" v-if="iframeType">
         <div class="app-iframe">
           <div class="sc-1nfyi8d-1 kExbnh">
             <div class="iframe-box">
@@ -107,13 +107,14 @@
             <div>
               <div class="headBtns">
                 <div class="btns">
-                  <div class="home enlarge"></div>
-                  <div class="refresh enlarge"></div>
-                  <div class="fullscreen enlarge" style="display: flex;"></div>
-                  <div class="copy enlarge"></div>
+                  <div class="home enlarge"><a href="/"></a></div>
+                  <div class="refresh enlarge" @click="refreshClick"></div>
+                  <div class="smallScreen enlarge" style="display: flex;" @click="smallScreenClick" v-if="fullscreenType"></div>
+                  <div class="fullscreen enlarge" style="display: flex;" @click="fullscreenClick" v-else></div>
+                  <div class="copy enlarge" @click="copyClick"></div>
                 </div>
                 <div class="btns">
-                  <div class="close enlarge"></div>
+                  <div class="close enlarge" @click="closeClick"></div>
                 </div>
               </div>
               <div class="games">
@@ -121,16 +122,16 @@
                   <div class="onlyBoxShadowBefore"></div>
                   <div class="onlyBoxShadow"></div>
                   <div class="gameShow">
-                    <div>
-                      <a class="imgSpace clickEnlarge">
+                    <a :href="'/#/details/'+item.Name.replace(/\s+/g, '')+'?gameId='+item.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')" v-for="(item,index) in recommendGameList" :key="index">
+                      <div class="imgSpace clickEnlarge">
                         <div style="position: relative;">
-                          <img src="" alt="">
-                          <div class="historyIcon">
-                            <img src="" alt="" width="30px" height="30px">
+                          <img v-lazy="item.iconUrl" alt="">
+                          <div class="historyIcon" v-show="index == 0 || index == 1 || index == 2">
+                            <img :src="history" alt="" width="30px" height="30px">
                           </div>
                         </div>
-                      </a>
-                    </div>
+                      </div>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -186,7 +187,9 @@ export default {
       mobileNavDragX: `${window.innerWidth - 70}px`,
       clickOrTouchType: false,
       portraitOrLandscape: false,
-      bubbleType: false
+      bubbleType: false,
+      recommendGameList: [], // 推荐游戏
+      fullscreenType: false, // 全屏状态
     }
   },
   mounted() {
@@ -194,26 +197,16 @@ export default {
     const { gameId } = query || {}
     const { gameName } = params || {}
     this.getAllJson()
+  },
+  methods: {
+    // 获取全部数据
+    getAllJson() {
+      const { query } = this.$route
+      const { gameId, channel } = query || {}
 
-    let that = this
-    let match = window.matchMedia("(orientation:portrait)");
-    if (match.matches) {
-      console.log('竖屏');
-      that.portraitOrLandscape = true
-      that.mobileNavDrag = {
-        '--mobileNavDragY': '24px',
-        '--mobileNavDragX': `${window.innerWidth - 70}px`
-      }
-    }else {
-      console.log('横屏');
-      that.portraitOrLandscape = false
-      that.mobileNavDrag = {
-        '--mobileNavDragY': '24px',
-        '--mobileNavDragX': `${window.innerWidth - 70 - 76}px`
-      }
-    }
-    match.addListener((mql) => {
-      console.log(mql);
+
+      let that = this
+      let match = window.matchMedia("(orientation:portrait)");
       if (match.matches) {
         console.log('竖屏');
         that.portraitOrLandscape = true
@@ -229,13 +222,26 @@ export default {
           '--mobileNavDragX': `${window.innerWidth - 70 - 76}px`
         }
       }
-    });
-  },
-  methods: {
-    // 获取全部数据
-    getAllJson() {
-      const { query } = this.$route
-      const { gameId, channel } = query || {}
+      match.addListener((mql) => {
+        console.log(mql);
+        if (match.matches) {
+          console.log('竖屏');
+          that.portraitOrLandscape = true
+          that.mobileNavDrag = {
+            '--mobileNavDragY': '24px',
+            '--mobileNavDragX': `${window.innerWidth - 70}px`
+          }
+        }else {
+          console.log('横屏');
+          that.portraitOrLandscape = false
+          that.mobileNavDrag = {
+            '--mobileNavDragY': '24px',
+            '--mobileNavDragX': `${window.innerWidth - 70 - 76}px`
+          }
+        }
+      });
+      
+      
       let jsonArr = getJson()
       let gameInfo = {}
       jsonArr && jsonArr.map((item)=>{
@@ -341,8 +347,6 @@ export default {
     backClick() {
       this.clickOrTouchType = false
       document.getElementById('unfoldContent').style.bottom = '80px'
-      console.log(this.mobileNavDragX);
-      console.log(window.innerWidth - 70);
       this.mobileNavDrag = {
         '--mobileNavDragY': this.mobileNavDragY,
         '--mobileNavDragX': this.mobileNavDragX,
@@ -350,6 +354,80 @@ export default {
         opacity: 1,
         left: this.mobileNavDragX == `${window.innerWidth - 70}px` ? '70px' : '-70px'
       }
+
+      // 推荐游戏
+      let recommendGameList = []
+      this.recentGameList.map((item)=>{
+        recommendGameList.push(item)
+      })
+      recommendGameList = recommendGameList.splice(0,3)
+      let arr = shuffle(getJson().splice(0,20))
+      arr.splice(0,7).map((item)=> {
+        recommendGameList.push(item)
+      })
+      this.recommendGameList = recommendGameList
+    },
+    // 点击刷新
+    refreshClick() {
+      setTimeout(()=>{
+        console.log('数据更新了');
+        document.getElementById('scrollbar').scrollTop = 0
+        this.iframeType = false
+        this.fullscreenType = false
+        this.mobileNavDrag = {
+          left: 0
+        }
+        this.getAllJson()
+      },200)
+    },
+    // 点击放大
+    fullscreenClick() {
+      // 打开全屏
+      const { documentElement } = document;
+      if (documentElement.requestFullscreen) {
+        documentElement.requestFullscreen();
+      } else if (documentElement.mozRequestFullScreen) {
+        documentElement.mozRequestFullScreen();
+      } else if (documentElement.webkitRequestFullScreen) {
+        documentElement.webkitRequestFullScreen();
+      }
+      this.fullscreenType = true
+    },
+    // 点击缩小
+    smallScreenClick() {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitCancelFullScreen) {
+        document.webkitCancelFullScreen();
+      }
+      this.fullscreenType = false
+    },
+    // 点击copy
+    copyClick() {
+      let url = window.location.href;//拿到想要复制的值
+      let copyInput = document.createElement('input');//创建input元素
+      document.body.appendChild(copyInput);//向页面底部追加输入框
+      copyInput.setAttribute('value', url);//添加属性，将url赋值给input元素的value属性
+      copyInput.select();//选择input元素
+      document.execCommand("Copy");//执行复制命令
+      this.$message.success("链接已复制！");//弹出提示信息，不同组件可能存在写法不同
+      //复制之后再删除元素，否则无法成功赋值
+      copyInput.remove();//删除动态创建的节点
+    },
+    // 点击浮窗关闭
+    closeClick() {
+      setTimeout(()=>{
+        document.getElementById('unfoldContent').style.bottom = 'calc(-550px)'
+        this.mobileNavDrag = {
+          '--mobileNavDragY': this.mobileNavDragY,
+          '--mobileNavDragX': this.mobileNavDragX,
+          transition: 'left 0.5s ease 0s',
+          opacity: 1,
+          left: 0
+        }
+      },200)
     },
     // 点击喜欢
     bubbleClick() {
@@ -363,7 +441,11 @@ export default {
     '$route'(val) {
       console.log(val,'数据更新了');
       document.getElementById('scrollbar').scrollTop = 0
-      // document.documentElement.scrollTop = 0
+      this.iframeType = false
+      this.fullscreenType = false
+      this.mobileNavDrag = {
+        left: 0
+      }
       this.getAllJson()
     }
   }
@@ -371,6 +453,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.gameShow::-webkit-scrollbar {
+  display: none;
+}
 @keyframes trembling {
   26% {
     transform: rotate(0deg) scale(1);
@@ -1080,6 +1165,10 @@ export default {
               background-image: url('~@/assets/fullscreen.png');
               background-size: 20px 20px;
             }
+            .smallScreen {
+              background-image: url('~@/assets/smallscreen.png');
+              background-size: 20px 20px;
+            }
             .copy {
               background-image: url('~@/assets/copy.png');
               background-size: 20px 20px;
@@ -1088,7 +1177,7 @@ export default {
               background-image: url('~@/assets/close.png');
               background-size: 20px 20px;
             }
-            .home,.refresh,.fullscreen,.copy,.close{
+            .home,.refresh,.fullscreen,.smallScreen,.copy,.close{
               background-repeat: no-repeat;
               background-position: center;
               //background-size: contain;
@@ -1105,6 +1194,11 @@ export default {
             width: 40px;
             height: 40px;
             box-shadow: var(--stretchBtnBoxShadow);
+            a{
+              display: block;
+              width: 100%;
+              height: 100%;
+            }
           }
         }
         .games {
@@ -1151,6 +1245,7 @@ export default {
                 margin: 5px;
                 width: 60px;
                 height: 60px;
+                display: block;
                 img{
                   width: 100%;
                   height: 100%;
@@ -1161,6 +1256,12 @@ export default {
                   position: absolute;
                   right: -6px;
                   top: -2px;
+                  img{
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 0;
+                    box-shadow: none;
+                  }
                 }
               }
             }
