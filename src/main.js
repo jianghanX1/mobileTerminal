@@ -7,6 +7,7 @@ import axios from 'axios'
 import VueLazyload from 'vue-lazyload'
 import { Button, Select, Input, Message, Form, FormItem, Rate } from 'element-ui'
 import { getJson, getUrlParams } from '@/utils/utils'
+
 Vue.use(Button)
 Vue.use(Select)
 Vue.use(Form)
@@ -15,7 +16,7 @@ Vue.use(Input)
 Vue.use(Rate)
 Vue.use(VueLazyload, {
   // 可选配置项
-  loading: '' // 懒加载默认图片
+  loading: require('@/assets/logo.png') // 懒加载默认图片
 })
 Vue.prototype.$axios = axios
 Vue.prototype.$message = Message

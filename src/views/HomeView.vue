@@ -4,7 +4,11 @@
       <div class="content-top">
         <div style="grid-area: in0">
           <div class="globalBtn">
-            <a href="/" class="logo">logo</a>
+            <a href="/" class="logo">
+              <div class="iconStyle clickEnlarge">
+                <img :src="logo" alt="">
+              </div>
+            </a>
             <div class="btn-bottom">
               <a href="/" class="btn-home"><div class="btn-home" style="border-right: 2px solid #ececec"><img :src="home" alt="" width="24px" height="20px"></div></a>
               <div class="btn-search">
@@ -154,6 +158,7 @@
 import {getJson, recentGame, shuffle} from '@/utils/utils'
 import Foot from "@/components/Foot.vue";
 import home from '@/assets/home.png'
+import logo from '@/assets/logo.png'
 export default {
   name: 'HomeView',
   components: {
@@ -162,6 +167,7 @@ export default {
   data() {
     return {
       home,
+      logo,
       topList: [], // 头部数据
       bottomList: [], // 底部数据
       structureList: [], // 布局列表
@@ -201,6 +207,14 @@ export default {
 <style lang="less" scoped>
 a{
   text-decoration: none;
+}
+img[lazy="loading"] {
+  width: 70%!important;
+  height: 20px!important;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 @keyframes clickEnlarge {
   0% {
@@ -409,10 +423,17 @@ a{
         box-shadow: 0 12px 10px 0 rgb(0 0 0/16%);
         transition: top .5s;
         .logo{
-          display: flex;
-          justify-content: center;
-          padding: 13px 8px 0 6px;
-          height: 41%;
+          .iconStyle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 13px 8px 0 6px;
+            height: 41%;
+            img{
+              width: 100%;
+              height: 20px;
+            }
+          }
         }
         .btn-bottom{
           display: flex;
@@ -470,6 +491,7 @@ a{
             height: 80px;
             border-radius: 15px;
             box-shadow: rgba(0, 0, 0, 0.16) 0px 8px 10px 0px;
+            position: relative;
             img{
               width: 100%;
               height: 100%;
@@ -503,6 +525,14 @@ a{
           img{
             width: 100%;
             border-radius: 15px;
+          }
+          img[lazy="loading"] {
+            width: 70%!important;
+            height: 30px!important;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
           }
         }
         .nine_grid_area{
@@ -659,11 +689,20 @@ a{
               margin-left: 16px;
               width: 83px;
               height: 83px;
+              position: relative;
             }
             .three_game_area_context_detail>a>div:first-child>img {
               border-radius: 15px;
               width: 78px;
               height: 78px;
+            }
+            .three_game_area_context_detail>a>div:first-child>img[lazy="loading"] {
+              width: 70%!important;
+              height: 10px!important;
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
             }
             .three_game_area_context_detail .context_title {
               display: flex;

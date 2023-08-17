@@ -101,7 +101,7 @@
             </div>
           </div>
         </div>
-        <el-button class="iframe-back" id="iframe-back" :style="mobileNavDrag" @touchmove.native.prevent="backToucheMove" @touchend.native.prevent="backToucheEnd"><img :src="goBack" alt=""></el-button>
+        <el-button class="iframe-back" id="iframe-back" :style="mobileNavDrag" @touchmove.native.prevent="backToucheMove" @touchend.native.prevent="backToucheEnd"><img :src="backType ? leftBack : rightBack" alt=""></el-button>
         <div class="unfoldContent" id="unfoldContent" style="bottom: calc(-550px); max-height: 470px;">
           <div class="gameMenu" style="width: 100vw;">
             <div>
@@ -123,8 +123,8 @@
                   <div class="onlyBoxShadow"></div>
                   <div class="gameShow">
                     <a :href="'/#/details/'+item.Name.replace(/\s+/g, '')+'?gameId='+item.gameId+($route.query.channel ? ('&channel='+$route.query.channel): '')" v-for="(item,index) in recommendGameList" :key="index" @click="iconClick(item)">
-                      <div class="imgSpace clickEnlarge">
-                        <div style="position: relative;">
+                      <div class="imgSpace clickEnlarge" style="position: relative;">
+                        <div>
                           <img v-lazy="item.iconUrl" alt="">
                           <div class="historyIcon" v-show="index == 0 || index == 1 || index == 2">
                             <img :src="history" alt="" width="30px" height="30px">
@@ -158,6 +158,8 @@ import {getJson, shuffle, recentGame} from '@/utils/utils';
 import Foot from "@/components/Foot.vue";
 import history from '@/assets/history.png';
 import goBack from '@/assets/goBack.png';
+import rightBack from '@/assets/rightBack.png';
+import leftBack from '@/assets/leftBack.png';
 import blueLike from '@/assets/blue-like.png';
 export default {
   name: "Details",
@@ -168,6 +170,8 @@ export default {
     return {
       history,
       goBack,
+      leftBack,
+      rightBack,
       blueLike,
       gameInfo: {}, // 游戏详情
       gameScore: 0,
@@ -190,6 +194,7 @@ export default {
       bubbleType: false,
       recommendGameList: [], // 推荐游戏
       fullscreenType: false, // 全屏状态
+      backType: false, // 返回按钮展示
     }
   },
   mounted() {
@@ -212,15 +217,23 @@ export default {
         that.portraitOrLandscape = true
         that.mobileNavDrag = {
           '--mobileNavDragY': '24px',
-          '--mobileNavDragX': `${window.innerWidth - 70}px`
+          '--mobileNavDragX': `${window.innerWidth - 70}px`,
+          borderRadius: '25px 0 0 25px'
         }
+        this.backType = false
+        this.mobileNavDragY = '24px'
+        this.mobileNavDragX = `${window.innerWidth - 70}px`
       }else {
         console.log('横屏');
         that.portraitOrLandscape = false
         that.mobileNavDrag = {
           '--mobileNavDragY': '24px',
-          '--mobileNavDragX': `${window.innerWidth - 70 - 76}px`
+          '--mobileNavDragX': `${window.innerWidth - 70 - 76}px`,
+          borderRadius: '25px 0 0 25px'
         }
+        this.backType = false
+        this.mobileNavDragY = '24px'
+        this.mobileNavDragX = `${window.innerWidth - 70 - 76}px`
       }
       match.addListener((mql) => {
         console.log(mql);
@@ -229,15 +242,23 @@ export default {
           that.portraitOrLandscape = true
           that.mobileNavDrag = {
             '--mobileNavDragY': '24px',
-            '--mobileNavDragX': `${window.innerWidth - 70}px`
+            '--mobileNavDragX': `${window.innerWidth - 70}px`,
+            borderRadius: '25px 0 0 25px'
           }
+          this.backType = false
+          this.mobileNavDragY = '24px'
+          this.mobileNavDragX = `${window.innerWidth - 70}px`
         }else {
           console.log('横屏');
           that.portraitOrLandscape = false
           that.mobileNavDrag = {
             '--mobileNavDragY': '24px',
-            '--mobileNavDragX': `${window.innerWidth - 70 - 76}px`
+            '--mobileNavDragX': `${window.innerWidth - 70 - 76}px`,
+            borderRadius: '25px 0 0 25px'
           }
+          this.backType = false
+          this.mobileNavDragY = '24px'
+          this.mobileNavDragX = `${window.innerWidth - 70}px`
         }
       });
       
@@ -329,8 +350,10 @@ export default {
       this.mobileNavDrag = {
         '--mobileNavDragY': `${e.targetTouches[0].clientY - 17 > 24 ? e.targetTouches[0].clientY - 17 > window.innerHeight - 45 ? window.innerHeight - 45 : e.targetTouches[0].clientY - 17 : 24}px`,
         '--mobileNavDragX': this.portraitOrLandscape ? `${e.targetTouches[0].clientX - 35}px` : `${e.targetTouches[0].clientX - 35 - 76}px`,
-        opacity: 0.6
+        opacity: 1,
+        borderRadius: e.targetTouches[0].clientX - 35 > window.innerWidth / 2 ? '25px 0 0 25px' : '0 25px 25px 0'
       }
+      this.backType = e.targetTouches[0].clientX - 35 > window.innerWidth / 2 ? false : true
       this.mobileNavDragY = `${e.targetTouches[0].clientY - 17 > 24 ? e.targetTouches[0].clientY - 17 > window.innerHeight - 45 ? window.innerHeight - 45 : e.targetTouches[0].clientY - 17 : 24}px`
       this.mobileNavDragX = this.portraitOrLandscape ? `${e.targetTouches[0].clientX - 35 > window.innerWidth / 2 ? window.innerWidth - 70 : 0}px` : `${e.targetTouches[0].clientX - 35 > window.innerWidth / 2 ? window.innerWidth - 70 - 76 : 0}px`
     },
@@ -340,9 +363,11 @@ export default {
         this.mobileNavDrag = {
           '--mobileNavDragY': this.mobileNavDragY,
           '--mobileNavDragX': this.mobileNavDragX,
-          opacity: 1,
+          opacity: 0.6,
+          borderRadius: this.mobileNavDragX == (this.portraitOrLandscape ? `${window.innerWidth - 70}px` :  `${window.innerWidth - 70 - 76}px`) ? '25px 0 0 25px' : '0 25px 25px 0'
         }
         this.clickOrTouchType = false
+        this.backType = this.mobileNavDragX == (this.portraitOrLandscape ? `${window.innerWidth - 70}px` :  `${window.innerWidth - 70 - 76}px`) ? false : true
       } else {
         this.backClick()
       }
@@ -356,9 +381,10 @@ export default {
         '--mobileNavDragX': this.mobileNavDragX,
         transition: 'left 0.5s ease 0s',
         opacity: 1,
+        borderRadius: this.mobileNavDragX == (this.portraitOrLandscape ? `${window.innerWidth - 70}px` :  `${window.innerWidth - 70 - 76}px`) ? '25px 0 0 25px' : '0 25px 25px 0',
         left: this.mobileNavDragX == `${window.innerWidth - 70}px` ? '70px' : '-70px'
       }
-
+      this.backType = this.mobileNavDragX == (this.portraitOrLandscape ? `${window.innerWidth - 70}px` :  `${window.innerWidth - 70 - 76}px`) ? false : true
       // 推荐游戏
       let recommendGameList = []
       this.recentGameList.map((item)=>{
@@ -457,6 +483,15 @@ export default {
 </script>
 
 <style lang="less" scoped>
+img[lazy="loading"] {
+  width: 70%!important;
+  height: 10px!important;
+  position: absolute!important;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: none!important;
+}
 .gameShow::-webkit-scrollbar {
   display: none;
 }
@@ -1324,12 +1359,18 @@ export default {
       text-align: center;
       transform: translate(var(--mobileNavDragX,24px),var(--mobileNavDragY,24px));
       border: none;
-      background: rgba(0,0,0,0);
+      background: #FFFFFF;
+      opacity: 0.6;
       padding: 0;
       left: 0;
+      box-shadow: 0 8px 16px 0 rgb(0 0 0 / 10%);
+      display: flex;
+      justify-content: center;
+      border-radius: 25px 0 0 25px;
+      align-items: center;
       img{
-        width: 100%;
-        height: 100%;
+        width: 50px;
+        height: 40px;
       }
     }
     .app-promote {
@@ -1374,11 +1415,16 @@ export default {
       height: 45px;
       transform: translate(var(--mobileNavDragX,24px),var(--mobileNavDragY,24px));
       border: none;
-      background: rgba(0,0,0,0);
-      padding: 0;
+      opacity: 0.6;
+      background: #FFFFFF;
+      box-shadow: 0 8px 16px 0 rgb(0 0 0 / 10%);
+      display: flex;
+      justify-content: center;
+      border-radius: 25px 0 0 25px;
+      align-items: center;
       img{
-        width: 100%;
-        height: 100%;
+        width: 50px;
+        height: 40px;
       }
     }
     .app-promote {
